@@ -10,18 +10,11 @@
   ],
   "author": "Andrew McCollum <amccollum@gmail.com>",
   "url": "http://github.com/amccollum/wings",
-  "repositories": [
-    {
-      "type": "git",
-      "url": "http://github.com/amccollum/wings.git"
-    }
-  ],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://opensource.org/licenses/mit-license.php"
-    }
-  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/amccollum/wings.git"
+  },
+  "license": "MIT",
   "main": "lib/wings.js",
   "ender": "lib/ender.js",
   "directories": {
