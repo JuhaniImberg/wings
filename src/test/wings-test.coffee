@@ -13,19 +13,19 @@ vows.add 'templates',
             topic: t('')
             'should be equal to the empty string': (topic) ->
                 equal topic, ''
-    
+
         'a template with no tags':
             topic: t('I think, therefore I am.')
             'should be equal to the same string': (topic) ->
                 equal topic, 'I think, therefore I am.'
-        
+
         'templates with escaped braces':
             topic: [
                 t('I think, {{therefore I am.}}'),
                 t('I }}{{think, {{{{therefore I am.}}}}'),
                 t('nested {{ {:truthy}{{ braces }} {{{/truthy} }}', {truthy: true}),
             ]
-                
+
             'should have double braces replaced with single braces': (topics) ->
                 equal topics[0], 'I think, {therefore I am.}'
                 equal topics[1], 'I }{think, {{therefore I am.}}'
@@ -41,45 +41,45 @@ vows.add 'templates',
         'a template with multiple tags':
             topic: t('The {adj1}, {adj2} fox {verb1} over the {adj3} dogs.',
                      {adj1:'quick', adj2:'brown', adj3:'lazy', verb1:'jumped'})
-        
+
             'should replace all the tags': (topic) ->
                 equal topic, 'The quick, brown fox jumped over the lazy dogs.'
-      
+
 
         'a template with dotted tags':
             topic: t('The {adjs.adj1}, {adjs.adj2} fox {verbs.verb1} over the {adjs.adj3} dogs.',
                      {adjs: {adj1:'quick', adj2:'brown', adj3:'lazy'}, verbs: {verb1:'jumped'}})
-                        
+
             'should replace the tags with the object properties': (topic) ->
                 equal topic, 'The quick, brown fox jumped over the lazy dogs.'
-    
+
         'a template with a function tag':
             topic: t('The result of the function is: "{fn1}".', {fn1: -> 'test'})
-        
+
             'should replace the tag with the result of the function': (topic) ->
                 equal topic, 'The result of the function is: "test".'
 
         'a template with comment tags':
             topic: t('There are comments{# comment #} in this template{# longer comment #}.')
-        
+
             'should remove the comments when rendered': (topic) ->
                 equal topic, 'There are comments in this template.'
 
         'a template with escaped tags':
             topic: t('This shouldn\'t produce html: {html}', {html: '<b>bolded</b>'})
-        
+
             'should escape the html reserved characters': (topic) ->
                 equal topic, 'This shouldn\'t produce html: &lt;b&gt;bolded&lt;/b&gt;'
 
         'a template with JSON tags':
             topic: t('This should produce json: {~ob}', { ob: ['a', 1, { 'b': 3 }]})
-        
+
             'should produce json': (topic) ->
                 equal topic, 'This should produce json: ["a",1,{"b":3}]'
 
         'a template with unescaped tags':
             topic: t('This should produce html: {&html}', {html: '<b>bolded</b>'})
-        
+
             'should produce html': (topic) ->
                 equal topic, 'This should produce html: <b>bolded</b>'
 
@@ -99,7 +99,7 @@ vows.add 'templates',
 
         'a template with tags having the value 0':
             topic: t('This is a zero: {zero}', {zero: 0})
-        
+
             'should preserve the zero': (topic) ->
                 equal topic, 'This is a zero: 0'
 
@@ -107,9 +107,9 @@ vows.add 'templates',
     'links:':
         'a template with a normal link':
             topic: t('{@foo}', {bar: 'baz'}, {foo:'{bar}'})
-        
+
             'should follow the link': (topic) ->
-                equal topic, 'baz' 
+                equal topic, 'baz'
 
         'a template with a normal link (whitespace in tag)':
             topic: [
@@ -127,7 +127,7 @@ vows.add 'templates',
 
         'a template with a function link':
             topic: t('{@foo}', {bar: 'baz'}, {foo: () -> '{bar}'})
-        
+
             'should call the function to get the link': (topic) ->
                 equal topic, 'baz'
 
@@ -138,12 +138,12 @@ vows.add 'templates',
                 t('{:falsy}foo{/falsy}bar', {falsy: 0}),
                 t('{:falsy}foo{/falsy}bar', {falsy: []}),
                 t('{:falsy}foo{/falsy}bar', {falsy: false}),
-            
+
                 t('{:truthy}foo{/truthy}bar', {truthy: 1}),
                 t('{:truthy}foo{/truthy}bar', {truthy: {}}),
                 t('{:truthy}foo{/truthy}bar', {truthy: true}),
             ]
-    
+
             'should only include the section when the tag is truthy': (topics) ->
                 equal topics[0], 'bar'
                 equal topics[1], 'bar'
@@ -159,7 +159,7 @@ vows.add 'templates',
                 t('{:falsy}foo{/ falsy }3{: truthy }bang{/  truthy  }', {falsy: 0, truthy: 1}),
                 t('{:\tfalsy\t}foo{/falsy}4{:\ttruthy\t}bang{/\ttruthy\t}', {falsy: 0, truthy: 1})
             ]
-        
+
             'should only include the section when the tag is truthy': (topics) ->
                 equal topics[0], '1bang'
                 equal topics[1], '2bang'
@@ -171,12 +171,12 @@ vows.add 'templates',
                 t('{!falsy}foo{/falsy}bar', {falsy: 0}),
                 t('{!falsy}foo{/falsy}bar', {falsy: []}),
                 t('{!falsy}foo{/falsy}bar', {falsy: false}),
-            
+
                 t('{!truthy}foo{/truthy}bar', {truthy: 1}),
                 t('{!truthy}foo{/truthy}bar', {truthy: {}}),
                 t('{!truthy}foo{/truthy}bar', {truthy: true}),
             ]
-        
+
             'should only include the section when the tag is not truthy': (topics) ->
                 equal topics[0], 'foobar'
                 equal topics[1], 'foobar'
@@ -192,7 +192,7 @@ vows.add 'templates',
                 t('{!falsy}foo{/ falsy }3{! truthy }bang{/  truthy  }', {falsy: 0, truthy: 1}),
                 t('{!\tfalsy\t}foo{/falsy}4{!\ttruthy\t}bang{/\ttruthy\t}', {falsy: 0, truthy: 1})
             ]
-        
+
             'should only include the section when the tag is not truthy': (topics) ->
                 equal topics[0], 'foo1'
                 equal topics[1], 'foo2'
@@ -212,26 +212,26 @@ vows.add 'templates',
                     array4: [{name:'foo'}, {name:'bar'}, {name:'baz'}],
                 }),
             ]
-        
+
             'should render the section once for each item in the array': (topics) ->
                 equal topics[0], 'foofoofoobar'
                 equal topics[1], 'foobarbaz'
                 equal topics[2], '1a2a3a4a5a'
-                equal topics[3], 'foobarbaz' 
+                equal topics[3], 'foobarbaz'
                 equal topics[4], 'foofoofoobarfoobarbaz1a2a3a4a5afoobarbaz'
 
         'a template with an object section':
             topic: t('{:obj}{foo}{bar}{baz}{/obj}', {obj: {foo: '1', bar: '2', baz: '3'}})
-        
+
             'should use the object as the new environment': (topic) ->
                 equal topic, '123'
 
         'a template with a function section':
             topic: t('{:fn}abcdef{/fn}', {fn: (str) -> str.split('').reverse().join('')})
-        
+
             'should replace the section with the result of the function': (topic) ->
                 equal topic, 'fedcba'
-            
+
         'a template with subtemplates':
             topic: t('{:tmpls}{name}: \'{text}\',{/tmpls}', {
                         tmpls: [
@@ -239,7 +239,7 @@ vows.add 'templates',
                             { name: 'tmpl2', text: '{:untrue}foo{/untrue}bar' },
                             { name: 'tmpl3', text: 'nested {{ {:truthy}{{ braces }} {{{/truthy} }}' },
                         ]})
-                       
+
             'should insert the subtemplates unmodified': (topic) ->
                 equal topic, '''tmpl1: 'The {adj1}, {adj2} fox {verb1} over the {adj3} dogs.',
                                 tmpl2: '{:untrue}foo{/untrue}bar',
@@ -253,9 +253,34 @@ vows.add 'templates',
                 t('{:exists}foo{/exists}bar', {exists: true}),
                 t('{!falsy}foo{/falsy}bar',   {falsy: false}),
             ]
-    
+
             'should only include the section when the value is defined': (topics) ->
                 equal topics[0], 'bar'
                 equal topics[1], 'bar'
                 equal topics[2], 'foobar'
                 equal topics[3], 'foobar'
+
+    'filters':
+        'a template with a filter':
+            topic: t('{foo | f}', {foo: 'bar'}, null, {f: (d) -> d.toUpperCase()})
+
+            'should call the function': (topic) ->
+                equal topic, 'BAR'
+
+        'a template with a two chained filters':
+            topic: t('{a | b | c}', {a: 'a'}, null, {
+                       b: (d) -> d + "b"
+                       c: (d) -> d + "c"
+                   })
+
+            'should call the functions in the right order': (topic) ->
+                equal topic, 'abc'
+
+        'a template with numerical filters':
+            topic: t('{n | p1 | d2}', {n: 3}, null, {
+                       p1: (d) -> d + 1
+                       d2: (d) -> d / 2
+                   })
+
+            'should be able to handle numbers': (topic) ->
+                equal topic, '2'

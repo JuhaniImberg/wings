@@ -1,11 +1,11 @@
 ((wings) ->
     wings.strict = false
 
-    wings.renderTemplate = (template, data, links) ->
+    wings.renderTemplate = (template, data, links, filters) ->
         # Replace escaped braces with an obscure unicode curly brace
         template = template.toString()
         template = replaceBraces(template)
-        template = renderRawTemplate(template, data, links)
+        template = renderRawTemplate(template, data, links, filters)
         template = restoreBraces(template)
         return template
 
@@ -26,11 +26,13 @@
     parsePattern = ///
         \{([:!]) \s* ([^}\s]*?) \s* \} ([\S\s]+?) \{/ \s* \2 \s* \} |           # sections
         \{(\#) [\S\s]+? \#\} |                                                  # comments
-        \{([@&~]?) \s* ([^}\s]*?) \s* \}                                         # tags
+        \{([@&~]?) \s* ([^}\s]*?) \s* ((\| \s* ([^}\s]*) \s* )* ) \s* \}        # tags
     ///mg
+    filterPattern = /\s*\|\s*([^}\s]*)/g
 
-    renderRawTemplate = (template, data, links) ->
-        template.replace parsePattern, (all, sectionOp, sectionName, sectionContent, commentOp, tagOp, tagName) ->
+    renderRawTemplate = (template, data, links, filters) ->
+        template.replace parsePattern, (all, sectionOp, sectionName,
+        sectionContent, commentOp, tagOp, tagName, filterData) ->
             op = sectionOp or commentOp or tagOp
             name = sectionName or tagName
             content = sectionContent
@@ -110,6 +112,17 @@
 
                     else if typeof value == 'function'
                         value = value.call(data)
+
+                    if filterData?
+                        filterNames = []
+                        filterName = filterPattern.exec(filterData)
+                        while filterName?
+                            filterNames.push filterName[1]
+                            filterName = filterPattern.exec(filterData)
+
+                    if filters? and filterNames?
+                        for filterName in filterNames
+                            value = filters[filterName](value)
 
                     if op == '~'
                         return JSON.stringify(value)
